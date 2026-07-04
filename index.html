@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0B1F17">
+<title>CricketAI — AI Umpire &amp; Scorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/camera.css">
+<link rel="stylesheet" href="styles/scoreboard.css">
+<link rel="stylesheet" href="styles/settings.css">
+</head>
+<body>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__seam" aria-hidden="true"></span>
+      <span class="topbar__name">Cricket<em>AI</em></span>
+    </div>
+    <div class="topbar__match-tag" id="topbarMatchTag" hidden></div>
+    <button class="iconbtn" id="settingsBtn" aria-label="Settings">⚙</button>
+  </header>
+
+  <!-- ============ VIEW: HOME ============ -->
+  <section class="view" id="view-home" data-view="home">
+    <div class="hero">
+      <h1 class="hero__title">Every ball,<br>called on the spot.</h1>
+      <p class="hero__sub">Point your phone down the pitch. CricketAI tracks the ball, calls wides and no-balls, and keeps the scorebook — all on-device, nothing uploaded.</p>
+    </div>
+
+    <div class="homeGrid">
+      <button class="card card--primary" id="newMatchBtn">
+        <span class="card__label">New match</span>
+        <span class="card__hint">Set up teams, toss, and overs</span>
+      </button>
+      <button class="card" id="resumeMatchBtn">
+        <span class="card__label">Resume match</span>
+        <span class="card__hint" id="resumeHint">No match in progress</span>
+      </button>
+      <button class="card" id="reviewMatchBtn">
+        <span class="card__label">Past matches</span>
+        <span class="card__hint">Scorecards, exports, replays</span>
+      </button>
+      <button class="card" id="calibrateBtn">
+        <span class="card__label">Calibrate camera</span>
+        <span class="card__hint">Crease, pitch width, stumps</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: TEAM & PLAYER SETUP ============ -->
+  <section class="view" id="view-setup" data-view="setup" hidden>
+    <nav class="stepper" id="setupStepper">
+      <button class="stepper__step is-active" data-step="teams">1 · Teams</button>
+      <button class="stepper__step" data-step="players">2 · Players</button>
+      <button class="stepper__step" data-step="toss">3 · Toss</button>
+      <button class="stepper__step" data-step="overs">4 · Overs &amp; opening</button>
+    </nav>
+
+    <!-- Step: Teams -->
+    <div class="setupPanel" data-panel="teams">
+      <h2>Name the two teams</h2>
+      <div class="teamPairForm">
+        <div class="field">
+          <label for="teamAName">Team A</label>
+          <input type="text" id="teamAName" placeholder="e.g. Falcons" maxlength="24">
+        </div>
+        <div class="field">
+          <label for="teamBName">Team B</label>
+          <input type="text" id="teamBName" placeholder="e.g. Warriors" maxlength="24">
+        </div>
+      </div>
+      <div class="panelActions">
+        <button class="btn btn--primary" id="teamsNextBtn">Next: Players</button>
+      </div>
+    </div>
+
+    <!-- Step: Players -->
+    <div class="setupPanel" data-panel="players" hidden>
+      <h2>Add players</h2>
+      <div class="rosterTabs">
+        <button class="rosterTabs__tab is-active" data-team="A">Team A</button>
+        <button class="rosterTabs__tab" data-team="B">Team B</button>
+      </div>
+      <div class="rosterAdd">
+        <input type="text" id="playerNameInput" placeholder="Player name" maxlength="24">
+        <select id="playerRoleInput">
+          <option value="bat">Batter</option>
+          <option value="bowl">Bowler</option>
+          <option value="all">All-rounder</option>
+          <option value="wk">Wicketkeeper</option>
+        </select>
+        <button class="btn" id="addPlayerBtn">Add</button>
+      </div>
+      <ul class="rosterList" id="rosterList"></ul>
+      <div class="panelActions">
+        <button class="btn btn--ghost" id="playersBackBtn">Back</button>
+        <button class="btn btn--primary" id="playersNextBtn">Next: Toss</button>
+      </div>
+    </div>
+
+    <!-- Step: Toss -->
+    <div class="setupPanel" data-panel="toss" hidden>
+      <h2>Toss</h2>
+      <button class="coin" id="coinFlipBtn">
+        <span class="coin__face">🪙</span>
+        <span class="coin__label">Tap to flip</span>
+      </button>
+      <div class="tossResult" id="tossResult" hidden>
+        <p><strong id="tossWinnerName"></strong> won the toss</p>
+        <div class="segmented">
+          <button data-choice="bat">Chose to bat</button>
+          <button data-choice="bowl">Chose to bowl</button>
+        </div>
+      </div>
+      <div class="panelActions">
+        <button class="btn btn--ghost" id="tossBackBtn">Back</button>
+        <button class="btn btn--primary" id="tossNextBtn" disabled>Next: Overs</button>
+      </div>
+    </div>
+
+    <!-- Step: Overs & opening pair -->
+    <div class="setupPanel" data-panel="overs" hidden>
+      <h2>Match format &amp; opening</h2>
+      <div class="field">
+        <label for="oversInput">Overs per innings</label>
+        <input type="number" id="oversInput" min="1" max="50" value="20">
+      </div>
+      <div class="field">
+        <label for="bowlerSelect">Opening bowler</label>
+        <select id="bowlerSelect"></select>
+      </div>
+      <div class="field">
+        <label for="strikerSelect">Striker</label>
+        <select id="strikerSelect"></select>
+      </div>
+      <div class="field">
+        <label for="nonStrikerSelect">Non-striker</label>
+        <select id="nonStrikerSelect"></select>
+      </div>
+      <div class="panelActions">
+        <button class="btn btn--ghost" id="oversBackBtn">Back</button>
+        <button class="btn btn--primary" id="startMatchBtn">Start match</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: LIVE (CAMERA + AI + SCOREBOARD) ============ -->
+  <section class="view view--live" id="view-live" data-view="live" hidden>
+
+    <div class="liveStage">
+      <video id="camVideo" playsinline autoplay muted></video>
+      <canvas id="overlayCanvas"></canvas>
+
+      <div class="liveHud">
+        <div class="hudChip" id="hudDecision">Ready</div>
+        <div class="hudChip hudChip--speed" id="hudSpeed">— km/h</div>
+      </div>
+
+      <div class="camControls">
+        <button class="camBtn" id="torchBtn" aria-label="Torch">🔦</button>
+        <button class="camBtn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+        <div class="camBtn camBtn--zoomLabel" id="zoomLabel">1.0×</div>
+        <button class="camBtn" id="zoomInBtn" aria-label="Zoom in">+</button>
+        <button class="camBtn camBtn--rec" id="recordToggleBtn" aria-label="Start tracking">●</button>
+      </div>
+    </div>
+
+    <div class="liveInfoBar">
+      <div class="oversText" id="oversText">Over 0.0</div>
+      <div class="scoreText" id="scoreText">0/0</div>
+      <div class="namesText" id="namesText">— vs —</div>
+    </div>
+
+    <!-- Signature element: LED ball-by-ball strip -->
+    <div class="ledStrip" id="ledStrip" aria-label="Ball by ball"></div>
+
+    <div class="quickScore" id="quickScore">
+      <button data-run="0">0</button>
+      <button data-run="1">1</button>
+      <button data-run="2">2</button>
+      <button data-run="3">3</button>
+      <button data-run="4">4</button>
+      <button data-run="6">6</button>
+      <button data-extra="wd" class="qs--alert">Wd</button>
+      <button data-extra="nb" class="qs--alert">Nb</button>
+      <button data-extra="lb">Lb</button>
+      <button data-extra="b">B</button>
+      <button data-wicket="1" class="qs--wicket">W</button>
+      <button data-action="undo" class="qs--ghost">Undo</button>
+    </div>
+  </section>
+
+  <!-- Ball edit sheet (slides up from LED strip) -->
+  <div class="editSheet" id="editSheet" hidden>
+    <div class="editSheet__handle"></div>
+    <h3 id="editSheetTitle">Ball 5.3</h3>
+    <div class="editSheet__grid">
+      <label><input type="radio" name="editRuns" value="0">0</label>
+      <label><input type="radio" name="editRuns" value="1">1</label>
+      <label><input type="radio" name="editRuns" value="2">2</label>
+      <label><input type="radio" name="editRuns" value="3">3</label>
+      <label><input type="radio" name="editRuns" value="4">4</label>
+      <label><input type="radio" name="editRuns" value="6">6</label>
+    </div>
+    <div class="editSheet__toggles">
+      <label><input type="checkbox" id="editWide">Wide</label>
+      <label><input type="checkbox" id="editNoball">No ball</label>
+      <label><input type="checkbox" id="editBye">Bye</label>
+      <label><input type="checkbox" id="editLegbye">Leg bye</label>
+      <label><input type="checkbox" id="editWicket">Wicket</label>
+    </div>
+    <div class="panelActions">
+      <button class="btn btn--ghost" id="editCancelBtn">Cancel</button>
+      <button class="btn btn--primary" id="editSaveBtn">Save</button>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: SCOREBOARD / SUMMARY ============ -->
+  <section class="view" id="view-scoreboard" data-view="scoreboard" hidden>
+    <h2 id="scoreboardTitle">Scorecard</h2>
+    <div id="scoreboardBody"></div>
+    <div class="panelActions">
+      <button class="btn" id="exportCsvBtn">Export CSV</button>
+      <button class="btn" id="exportJsonBtn">Export JSON</button>
+      <button class="btn" id="exportPdfBtn">Export PDF</button>
+      <button class="btn btn--primary" id="backToLiveBtn">Back to match</button>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: PAST MATCHES ============ -->
+  <section class="view" id="view-history" data-view="history" hidden>
+    <h2>Past matches</h2>
+    <ul class="matchList" id="matchList"></ul>
+    <div class="panelActions">
+      <button class="btn btn--ghost" id="historyBackBtn">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: CALIBRATION ============ -->
+  <section class="view" id="view-calibrate" data-view="calibrate" hidden>
+    <h2>Calibrate the pitch</h2>
+    <p class="muted">Tap the four corners of the pitch, then the popping crease line and stump positions. This lets the rule engine judge wide, no-ball and height.</p>
+    <div class="liveStage liveStage--calibrate">
+      <video id="calVideo" playsinline autoplay muted></video>
+      <canvas id="calCanvas"></canvas>
+    </div>
+    <div class="panelActions">
+      <button class="btn btn--ghost" id="calResetBtn">Reset points</button>
+      <button class="btn btn--primary" id="calSaveBtn">Save calibration</button>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: SETTINGS ============ -->
+  <section class="view" id="view-settings" data-view="settings" hidden>
+    <h2>Settings</h2>
+    <div class="settingsList" id="settingsList"></div>
+    <div class="panelActions">
+      <button class="btn btn--ghost" id="settingsBackBtn">Back</button>
+    </div>
+  </section>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="bottomNav" id="bottomNav">
+    <button data-nav="home" class="is-active">Home</button>
+    <button data-nav="live">Live</button>
+    <button data-nav="scoreboard">Score</button>
+    <button data-nav="history">History</button>
+  </nav>
+
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<!-- ONNX Runtime Web — only used if a real model is present in /ai. Loaded lazily by detector.js -->
+<script>window.__ORT_CDN__ = "https://cdnjs.cloudflare.com/ajax/libs/onnxruntime-web/1.18.0/ort.min.js";</script>
+
+<script src="js/storage.js"></script>
+<script src="js/teams.js"></script>
+<script src="js/players.js"></script>
+<script src="js/session.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/detector.js"></script>
+<script src="js/tracker.js"></script>
+<script src="js/trajectory.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/overlay.js"></script>
+<script src="js/scoreboard.js"></script>
+<script src="js/export.js"></script>
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
