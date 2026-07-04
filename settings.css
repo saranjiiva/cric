@@ -1,0 +1,25 @@
+.settingsList{ display:flex; flex-direction:column; gap:2px; }
+.settingRow{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 4px; border-bottom:1px solid var(--line-soft);
+}
+.settingRow__label{ font-size:14px; }
+.settingRow__hint{ font-size:12px; color: var(--text-faint); margin-top:2px; }
+
+.switch{ position:relative; width:44px; height:26px; flex:0 0 auto; }
+.switch input{ opacity:0; width:0; height:0; }
+.switch__track{
+  position:absolute; inset:0; background: var(--surface-2); border:1px solid var(--line);
+  border-radius:100px; cursor:pointer; transition: background .15s;
+}
+.switch__track::after{
+  content:""; position:absolute; top:2px; left:2px; width:20px; height:20px;
+  background: var(--text-dim); border-radius:50%; transition: transform .15s, background .15s;
+}
+.switch input:checked + .switch__track{ background: var(--lime-dim); border-color: var(--lime); }
+.switch input:checked + .switch__track::after{ transform: translateX(18px); background: var(--lime); }
+
+.settingRow select, .settingRow input[type="number"]{
+  background: var(--surface); border:1px solid var(--line); color:var(--text);
+  padding:8px 10px; border-radius: var(--radius-s); font-family: var(--font-mono); font-size:13px;
+}
