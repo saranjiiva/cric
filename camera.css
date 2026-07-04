@@ -1,0 +1,75 @@
+.view--live{ padding: 12px 0 0; }
+
+.liveStage{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 12;
+  max-height: 62vh;
+  background: #000;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line-soft);
+}
+.liveStage--calibrate{ aspect-ratio: 9/12; max-height: 60vh; margin-top:12px; border-radius: var(--radius-m); overflow:hidden; }
+
+.liveStage video, .liveStage canvas, .liveStage--calibrate video, .liveStage--calibrate canvas{
+  position:absolute; inset:0; width:100%; height:100%; object-fit: cover;
+}
+#camVideo, #calVideo{ transform: scaleX(1); }
+#overlayCanvas, #calCanvas{ pointer-events: auto; }
+
+.liveHud{
+  position:absolute; top:10px; left:10px; right:10px;
+  display:flex; justify-content:space-between; pointer-events:none;
+}
+.hudChip{
+  font-family: var(--font-mono); font-size:13px;
+  background: #0009; border:1px solid #ffffff22; color: var(--lime);
+  padding:6px 12px; border-radius:100px; backdrop-filter: blur(4px);
+}
+.hudChip--speed{ color: var(--info); }
+
+.camControls{
+  position:absolute; bottom:12px; left:0; right:0;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.camBtn{
+  width:44px; height:44px; border-radius:50%;
+  background:#0009; border:1px solid #ffffff33; color:#fff;
+  font-size:16px; cursor:pointer; backdrop-filter: blur(4px);
+}
+.camBtn--zoomLabel{
+  border-radius: 100px; width:auto; padding:0 10px; font-family: var(--font-mono); font-size:12px;
+  display:flex; align-items:center;
+}
+.camBtn--rec{
+  width:56px; height:56px; background: var(--wicket); border-color: var(--wicket);
+  font-size:20px;
+}
+.camBtn--rec.is-tracking{ background: var(--lime); border-color: var(--lime); color:#0B1F17; }
+
+.liveInfoBar{
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 10px 16px; background: var(--surface); border-bottom:1px solid var(--line-soft);
+  font-family: var(--font-display); font-weight:700;
+}
+.scoreText{ font-size:22px; color: var(--lime); }
+.oversText, .namesText{ font-size:13px; color: var(--text-dim); font-family: var(--font-mono); font-weight:400; }
+
+.quickScore{
+  display:grid; grid-template-columns: repeat(6, 1fr);
+  gap:8px; padding: 10px 16px 18px;
+}
+.quickScore button{
+  background: var(--surface-2); border:1px solid var(--line); color:var(--text);
+  padding:14px 0; border-radius: var(--radius-s); font-family: var(--font-display);
+  font-weight:700; font-size:16px; cursor:pointer;
+}
+.qs--alert{ color: var(--alert); border-color: var(--alert); }
+.qs--wicket{ color:#fff; background: var(--wicket); border-color: var(--wicket); }
+.qs--ghost{ color: var(--text-faint); grid-column: span 2; }
+
+@media (max-width: 380px){
+  .liveStage{ max-height: 54vh; }
+  .quickScore{ grid-template-columns: repeat(4,1fr); }
+  .qs--ghost{ grid-column: span 4; }
+}
