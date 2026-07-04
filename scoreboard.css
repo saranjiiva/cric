@@ -1,0 +1,68 @@
+/* ===========================================================
+   Signature element: the LED strip. Each ball is a tile that
+   glows like a stadium scoreboard bulb — lime for legal scoring
+   balls, amber for wide/no-ball, red for a wicket, dim grey for
+   an unbowled/future ball. Tapping a tile opens the edit sheet.
+   =========================================================== */
+.ledStrip{
+  display:flex; gap:6px; padding: 10px 16px;
+  overflow-x:auto; scroll-behavior:smooth;
+  background: repeating-linear-gradient(
+    90deg, var(--bg-raised) 0 1px, var(--surface) 1px 34px
+  );
+  border-bottom:1px solid var(--line-soft);
+}
+.ledTile{
+  flex: 0 0 34px; height:34px;
+  border-radius: 4px;
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-mono); font-weight:600; font-size:13px;
+  background: #0006; color: var(--text-faint); border:1px solid #ffffff11;
+  cursor:pointer; position:relative;
+}
+.ledTile[data-kind="legal"]{ color: var(--lime); background: var(--lime-dim); box-shadow: 0 0 8px #C8FF4D33; border-color:#C8FF4D33; }
+.ledTile[data-kind="alert"]{ color: var(--alert); background: var(--alert-dim); box-shadow: 0 0 8px #FF6B3533; border-color:#FF6B3533; }
+.ledTile[data-kind="wicket"]{ color:#fff; background: var(--wicket); box-shadow: 0 0 10px #FF3B5C55; }
+.ledTile[data-kind="dot"]{ color: var(--text-dim); }
+.ledTile::after{ /* over marker */
+  content: attr(data-over-end); position:absolute; bottom:-14px; font-size:9px; color: var(--text-faint);
+}
+
+/* Edit sheet — slides up as a bottom sheet on mobile */
+.editSheet{
+  position: fixed; left:0; right:0; bottom:0;
+  max-width:720px; margin:0 auto;
+  background: var(--bg-raised); border-top:1px solid var(--line);
+  border-radius: 18px 18px 0 0;
+  padding: 10px 20px calc(20px + var(--safe-bottom));
+  z-index: 90;
+  box-shadow: 0 -10px 30px #0009;
+  animation: sheetUp .18s ease-out;
+}
+@keyframes sheetUp{ from{ transform: translateY(100%);} to{ transform: translateY(0);} }
+.editSheet__handle{
+  width:36px; height:4px; background: var(--line); border-radius:100px; margin: 4px auto 14px;
+}
+.editSheet__grid{
+  display:grid; grid-template-columns: repeat(6,1fr); gap:8px; margin-bottom:14px;
+}
+.editSheet__grid label{
+  display:flex; align-items:center; justify-content:center;
+  background: var(--surface); border:1px solid var(--line); border-radius: var(--radius-s);
+  padding:10px 0; font-family: var(--font-display); font-weight:700; cursor:pointer;
+}
+.editSheet__grid input{ display:none; }
+.editSheet__grid label:has(input:checked){ background: var(--lime); color:var(--bg); border-color:var(--lime); }
+.editSheet__toggles{ display:flex; flex-wrap:wrap; gap:14px; font-size:13px; color: var(--text-dim); }
+.editSheet__toggles label{ display:flex; align-items:center; gap:6px; }
+
+/* Scorecard summary tables */
+.scorecard{ width:100%; border-collapse: collapse; margin: 14px 0; font-size:14px; }
+.scorecard th{ text-align:left; color: var(--text-faint); font-size:11px; text-transform:uppercase; font-family: var(--font-mono); padding:6px 8px; border-bottom:1px solid var(--line); }
+.scorecard td{ padding:8px; border-bottom:1px solid var(--line-soft); }
+.scorecard tr:hover td{ background: var(--surface); }
+.inningsHeader{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-top:20px; padding-bottom:6px; border-bottom:1px solid var(--line);
+}
+.inningsHeader .total{ font-family: var(--font-display); font-size:20px; color: var(--lime); }
